@@ -43,6 +43,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [watingNum, setWaitingNum] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [movieDetailLoading, setMovieDetailLoading] = useState(false);
   const [selectedId, setSelectedId] = useState('tt1375666');
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
@@ -116,6 +117,7 @@ export default function App() {
     setSelectedId(null);
   };
   useEffect(() => {
+    setMovieDetailLoading(true);
     async function getMovieDetail() {
       try {
         const response = await fetch(
@@ -127,7 +129,11 @@ export default function App() {
         const data = await response.json();
         setDetailMovie(data);
         console.log(data);
-      } catch (error) {}
+      } catch (error) {
+        throw new Error(`new Error:\n${error}`);
+      } finally {
+        setMovieDetailLoading(false);
+      }
     }
     getMovieDetail();
   }, [selectedId]);
@@ -167,12 +173,13 @@ export default function App() {
           )}
         </MovieBox>
         <MovieBox isOpen1={isOpen2} setIsOpen1={setIsOpen2} key={2}>
-          {isOpen2 &&
-            (selectedId ? (
+          {isOpen2 ? (
+            selectedId ? (
               <MovieDetail
                 key={detailMovie.Poster}
                 {...detailMovie}
                 onClose={clearMovie}
+                loading={movieDetailLoading}
               />
             ) : (
               <>
@@ -221,7 +228,10 @@ export default function App() {
                   ))}
                 </ul>
               </>
-            ))}
+            )
+          ) : (
+            <p>Loading...</p>
+          )}
         </MovieBox>
       </main>
     </>
