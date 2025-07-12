@@ -6,6 +6,7 @@ import NumResult from './components/NumResult/NumResult';
 import SearchInput from './components/SearchInput/SearchInput';
 import MovieItem from './components/MovieItem/MovieItem';
 import MovieDetail from './components/MovieDetail/MovieDetail';
+import { StarProvider } from './hook/useStar';
 
 const tempWatchedData = [
   {
@@ -45,12 +46,34 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [movieDetailLoading, setMovieDetailLoading] = useState(false);
   const [selectedId, setSelectedId] = useState('tt1375666');
+  const [isWatched, setIsWatched] = useState(false);
   const [isOpen1, setIsOpen1] = useState(true);
   const [isOpen2, setIsOpen2] = useState(true);
+  const [rate, setRate] = useState(0);
 
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
+
   const avgUserRating = average(watched.map((movie) => movie.userRating));
-  const avgRuntime = average(watched.map((movie) => movie.runtime));
+
+  const avgRuntime = average(
+    watched.map((movie) => {
+      return movie.Runtime.split(' ').at(0);
+    })
+  );
+
+  const clearMovie = () => {
+    setSelectedId(null);
+  };
+
+  const addToWatched = () => {
+    setWatched((prevMovies) => [
+      ...prevMovies,
+      { ...detailMovie, userRating: rate },
+    ]);
+  };
+  const isWatchedBefore = watched.some(
+    (watchedMovie) => watchedMovie.imdbID === selectedId
+  );
   useEffect(() => {
     console.log(selectedId);
   }, [selectedId]);
@@ -84,10 +107,8 @@ export default function App() {
         } else {
           setMovies(data.Search);
         }
-
-        console.log(data);
       } catch (error) {
-        console.log(error);
+        throw new Error(error);
       } finally {
         setLoading(false);
         setWaitingNum(0);
@@ -113,11 +134,10 @@ export default function App() {
 
     return () => clearInterval(interval); // جلوگیری از تکرار بی‌نهایت
   }, [loading]);
-  const clearMovie = () => {
-    setSelectedId(null);
-  };
+
   useEffect(() => {
     setMovieDetailLoading(true);
+
     async function getMovieDetail() {
       try {
         const response = await fetch(
@@ -135,6 +155,7 @@ export default function App() {
         setMovieDetailLoading(false);
       }
     }
+
     getMovieDetail();
   }, [selectedId]);
 
@@ -142,7 +163,7 @@ export default function App() {
     setSelectedId(id);
   };
   return (
-    <>
+    <StarProvider value={{ rate, setRate }}>
       <Navbar>
         <Logo />
         <NumResult MoviesCount={movies.length} />
@@ -167,7 +188,11 @@ export default function App() {
           {isOpen1 && !loading && (
             <ul className="list">
               {movies?.map((movie) => (
-                <MovieItem {...movie} clickEvent={handleClick} />
+                <MovieItem
+                  key={movie.imdbID}
+                  {...movie}
+                  clickEvent={handleClick}
+                />
               ))}
             </ul>
           )}
@@ -180,6 +205,8 @@ export default function App() {
                 {...detailMovie}
                 onClose={clearMovie}
                 loading={movieDetailLoading}
+                onAddWatched={addToWatched}
+                isWatched={isWatchedBefore}
               />
             ) : (
               <>
@@ -221,7 +248,7 @@ export default function App() {
                         </p>
                         <p>
                           <span>⏳</span>
-                          <span>{movie.runtime} min</span>
+                          <span>{movie.Runtime}</span>
                         </p>
                       </div>
                     </li>
@@ -234,6 +261,6 @@ export default function App() {
           )}
         </MovieBox>
       </main>
-    </>
+    </StarProvider>
   );
 }

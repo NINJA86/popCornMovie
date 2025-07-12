@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Stars from '../Stars/Stars';
 function MovieDetail({
   Actors,
@@ -12,11 +12,15 @@ function MovieDetail({
   Plot,
   onClose,
   loading,
+  onAddWatched,
+  isWatched,
 }) {
+  const [hasRated, setHasRated] = useState(false);
+  useEffect(() => {}, []);
   return (
     <div className="details">
       {loading ? (
-        <p>Loadin...</p>
+        <p>Loading...</p>
       ) : (
         <>
           {' '}
@@ -39,8 +43,19 @@ function MovieDetail({
           </header>
           <section className="">
             <div className="rating">
-              <Stars />
+              {!isWatched && <Stars setHasRated={setHasRated} />}
+              {hasRated && !isWatched && (
+                <button className="btn-add" onClick={onAddWatched}>
+                  Add to watched ⭐
+                </button>
+              )}
+              {isWatched && (
+                <p style={{ color: 'green', fontWeight: 'bold' }}>
+                  You have already watched this movie ✅
+                </p>
+              )}
             </div>
+
             <p>
               <em>{Plot}</em>
             </p>
