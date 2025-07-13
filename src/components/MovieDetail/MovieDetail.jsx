@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Stars from '../Stars/Stars';
 function MovieDetail({
   Actors,
@@ -14,9 +14,11 @@ function MovieDetail({
   loading,
   onAddWatched,
   isWatched,
+  ratedMovie,
 }) {
   const [hasRated, setHasRated] = useState(false);
-  useEffect(() => {}, []);
+  console.log(ratedMovie);
+
   return (
     <div className="details">
       {loading ? (
@@ -45,13 +47,13 @@ function MovieDetail({
             <div className="rating">
               {!isWatched && <Stars setHasRated={setHasRated} />}
               {hasRated && !isWatched && (
-                <button className="btn-add" onClick={onAddWatched}>
+                <button className="btn-add" onClick={() => onAddWatched()}>
                   Add to watched ⭐
                 </button>
               )}
               {isWatched && (
                 <p style={{ color: 'green', fontWeight: 'bold' }}>
-                  You have already watched this movie ✅
+                  You have already rated {ratedMovie} this movie ✅
                 </p>
               )}
             </div>

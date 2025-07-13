@@ -74,6 +74,13 @@ export default function App() {
   const isWatchedBefore = watched.some(
     (watchedMovie) => watchedMovie.imdbID === selectedId
   );
+
+  const deleteWatchedMovie = (id) => {
+    const deletedMovies = watched.filter((watchedMovie) => {
+      return watchedMovie.imdbID !== id;
+    });
+    setWatched(deletedMovies);
+  };
   useEffect(() => {
     console.log(selectedId);
   }, [selectedId]);
@@ -162,6 +169,8 @@ export default function App() {
   const handleClick = (id) => {
     setSelectedId(id);
   };
+  console.log(detailMovie);
+
   return (
     <StarProvider value={{ rate, setRate }}>
       <Navbar>
@@ -235,6 +244,12 @@ export default function App() {
                 <ul className="list">
                   {watched.map((movie) => (
                     <li key={movie.imdbID}>
+                      <button
+                        className="btn-delete"
+                        onClick={() => deleteWatchedMovie(movie.imdbID)}
+                      >
+                        &times;
+                      </button>
                       <img src={movie.Poster} alt={`${movie.Title} poster`} />
                       <h3>{movie.Title}</h3>
                       <div>
