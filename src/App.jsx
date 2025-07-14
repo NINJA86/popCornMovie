@@ -34,6 +34,7 @@ import { StarProvider } from './hook/useStar';
 // api is https://www.omdbapi.com/?t=The+Matrix&apikey=f5a2539d
 
 const apiKey = 'f5a2539d';
+console.log(apiKey);
 
 const average = (arr) => arr.reduce((acc, cur) => acc + cur / arr.length, 0);
 
@@ -73,7 +74,8 @@ export default function App() {
     ]);
     setRate(0);
   };
-
+  const addSpaceForSearching = (movieName) =>
+    movieName.trim().split(' ').join('+');
   const isWatchedBefore = watched.some((movie) => movie.imdbID === selectedId);
 
   const ratedMovie = watched.find(
@@ -97,7 +99,9 @@ export default function App() {
     const timer = setTimeout(async () => {
       try {
         const res = await fetch(
-          `https://www.omdbapi.com/?s=${query}&apikey=${apiKey}`,
+          `https://www.omdbapi.com/?s=${addSpaceForSearching(
+            query
+          )}&apikey=${apiKey}`,
           { signal: controller.signal }
         );
         if (!res.ok) throw new Error('Error fetching movies');
@@ -133,8 +137,6 @@ export default function App() {
     if (!isOpen2) {
       setSelectedId(null);
     }
-
-    console.log(isOpen2);
 
     async function getMovieDetail() {
       setMovieDetailLoading(true);
