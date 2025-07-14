@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Stars from '../Stars/Stars';
 function MovieDetail({
   Actors,
@@ -16,9 +16,13 @@ function MovieDetail({
   isWatched,
   ratedMovie,
 }) {
-  const [hasRated, setHasRated] = useState(false);
+  const [hasRated, setHasRated] = useState(Boolean(ratedMovie));
   console.log(ratedMovie);
-
+  useEffect(() => {
+    setHasRated(() => {
+      return Boolean(ratedMovie);
+    });
+  }, [ratedMovie]);
   return (
     <div className="details">
       {loading ? (

@@ -6,7 +6,6 @@ function MovieItem({ imdbID, Title, Year, Poster, clickEvent }) {
       key={imdbID}
       onClick={() => {
         clickEvent(imdbID);
-        console.log('hello');
       }}
       style={{ cursor: 'pointer' }}
     >
